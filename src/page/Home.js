@@ -1,26 +1,29 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef } from "react";
+import classes from "./Home.module.css";
 const Home = () => {
-  const [username, setUsername] = useState(null);
-  const userRef = useRef();
-  useEffect(() => {
-    // POST request using fetch inside useEffect React hook
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user: username }),
-    };
-    fetch("https://localhost:5000/add-user", requestOptions)
-      .then((response) => response.json())
-      .then((data) => console.log(data));
-  }, [username]);
+  const userRef = useRef("");
 
-  const submitHandler = () => {
-    setUsername(userRef.value);
+  const submitHandler = (e) => {
+    e.preventDefault();
+    const user = userRef.current.value;
+    console.log(user);
+    addUserHandler(user);
   };
 
+  async function addUserHandler(user) {
+    const response = await fetch("http://localhost:5000/", {
+      method: "POST",
+      body: JSON.stringify({ user: user }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    console.log(data);
+  }
   return (
-    <div>
-      <form onSubmit={submitHandler}>
+    <div className={classes.container}>
+      <form onSubmit={submitHandler} className={classes.form_control}>
         <label>Enter User | Users</label>
         <input type="text" ref={userRef} />
         <button>Add User</button>
