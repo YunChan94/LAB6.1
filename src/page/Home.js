@@ -1,26 +1,31 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom/dist";
+
 import classes from "./Home.module.css";
 const Home = () => {
-  const userRef = useRef("");
+  const [user, setUser] = useState("");
+  const userRef = useRef();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userName: user }),
+    };
+
+    fetch("http://localhost:5000/", requestOptions)
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+  }, [user]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    const user = userRef.current.value;
+    setUser(userRef.current.value);
     console.log(user);
-    addUserHandler(user);
+    navigate("/users");
   };
 
-  async function addUserHandler(user) {
-    const response = await fetch("http://localhost:5000/", {
-      method: "POST",
-      body: JSON.stringify({ user: user }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    console.log(data);
-  }
   return (
     <div className={classes.container}>
       <form onSubmit={submitHandler} className={classes.form_control}>
